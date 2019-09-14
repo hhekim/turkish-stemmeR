@@ -1,5 +1,8 @@
 VOWELS = c("ü","i","ı","u","e","ö","a","o")
 
+ALPHABET = c("a","b","c","ç","d","e","f","g","ğ","h","ı","i","j","k","l","m",
+             "n","o","ö","p","r","s","ş","t","u","ü","v","y","z")
+
 nvs <- list("1010"=c("leri","ları"),
             "101"=c("lar","ler","den","dan","ten","tan","nin","nın","nun","nün","miz","mız","muz","müz","niz","nız","nuz","nüz"),
             "10"=c("yi","yı","yu","yü","ye","ya","de","da","te","ta","ca","ce","ça","çe"),
@@ -7,10 +10,13 @@ nvs <- list("1010"=c("leri","ları"),
             "0"=c("i","ı","u","ü","e","a"),
             "1"=c("m","n"))
 
-word_list <- scan("word-list.txt", what = "character", sep = "\n")
+word_list <- scan("RDir/kelime-listesi.txt", what = "character", sep = "\n")
 
 stemmer <- function(x){
   
+  x <- tolower(x)
+  if(foreignLetterCheck(x)) return(x)
+  if(x %in% word_list) return(x)
   num_of_syllables <- findNumofSyllable(x)
   if(num_of_syllables == 1) return(x)
   
@@ -41,7 +47,9 @@ stemmer <- function(x){
         cosl <- dropFromLeft(cosl)
         k <- k - 1
       }
+      
     }
+    return(x)
   }
 }
 
@@ -55,7 +63,7 @@ findNumofSyllable <- function(x){
 # Extracting syllables
 syllableExtractor <- function(word){
   # Change letters to lowercase
-  word <- tolower(word)
+  # word <- tolower(word)
   # Split string into letters
   word <- unlist(strsplit(word, split = character(0)))
   # Variables to hold values
@@ -78,6 +86,7 @@ syllableExtractor <- function(word){
         wordPart <- word[k:(k+3)]
         codePart <- c(codePart, paste(wordCode[k],wordCode[k+1],wordCode[k+2],wordCode[k+3], sep=""))
       }
+      
       if((j - k) > 3 & wordCode[k]=="1" & wordCode[k+1]=="0" & wordCode[k+2]=="1" & 
          wordCode[k+3]=="1" & wordCode[k+4]=="1"){
         wordPart <- word[k:(k+4)]
@@ -96,8 +105,9 @@ syllableExtractor <- function(word){
         wordPart <- word[k]
         codePart <- c(codePart, wordCode[k])
       }
-      
       switch(codePart,
+             "0010"={out <- c(out, word[k])
+             k <- k + 1},
              "0100"={out <- c(out, word[k])
              k <- k + 1},
              "0101"={out <- c(out, word[k])
@@ -167,3 +177,20 @@ convertBinary <- function(x){
   }
   return(paste(code, collapse = ""))
 }
+
+foreignLetterCheck <-  function(x){
+  x <- unlist(strsplit(x, split = character(0)))
+  if(length(x) == 1) return(TRUE)
+  for(i in 1:length(x)){
+    if(!(x[i] %in% ALPHABET)) return(TRUE)
+  }
+  return(FALSE)
+}
+
+
+
+
+
+
+
+

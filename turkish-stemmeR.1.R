@@ -10,7 +10,7 @@ nvs <- list("1010"=c("leri","ları"),
             "0"=c("i","ı","u","ü","e","a"),
             "1"=c("m","n"))
 
-word_list <- scan("RDir/word-list.txt", what = "character", sep = "\n")
+word_list <- scan("word-list.txt", what = "character", sep = "\n")
 
 stemmer <- function(x){
   
